@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext, useState, useEffect } from "react";
 import "./comments.scss";
 import { AuthContext } from "../../context/authContext";
 import { useQuery } from '@tanstack/react-query'
@@ -6,7 +6,7 @@ import { makeRequest } from "../../axios";
 import moment from 'moment'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 
-const Comments = ({ postId }) => {
+const Comments = ({ postId, updateComment }) => {
 
   const [desc, setDesc] = useState('')
   const queryClient = useQueryClient()
@@ -25,11 +25,13 @@ const Comments = ({ postId }) => {
       queryClient.invalidateQueries({ queryKey: ['comments'] })
     },
   })
+
   //handleSend
   const handleSend = async (e) => {
     e.preventDefault();
     mutation.mutate({ desc, postId })
     setDesc('')
+    updateComment(data.length + 1)
   }
 
   const { currentUser } = useContext(AuthContext);

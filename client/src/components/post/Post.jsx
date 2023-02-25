@@ -6,11 +6,26 @@ import ShareOutlinedIcon from "@mui/icons-material/ShareOutlined";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import { Link } from "react-router-dom";
 import Comments from "../comments/Comments";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import moment from 'moment'
+import { makeRequest } from "../../axios";
 
 const Post = ({ post }) => {
   const [commentOpen, setCommentOpen] = useState(false);
+  const [commentsNum, setCommentsNum] = useState(0)
+  //query the number of comments 
+  useEffect(() => {
+    async function getComments() {
+      const result = await makeRequest.get(`/comments?postId=${post.id}`)
+      console.log(result)
+      setCommentsNum(result.data.length)
+    }
+    getComments()
+  }, [])
+
+  const updateComment = (commentsNumber) => {
+    setCommentsNum(commentsNumber)
+  }
   //TEMPORARY
   const liked = false;
 
@@ -44,14 +59,14 @@ const Post = ({ post }) => {
           </div>
           <div className="item" onClick={() => setCommentOpen(!commentOpen)}>
             <TextsmsOutlinedIcon />
-            12 Comments
+            {commentsNum} Comments
           </div>
           <div className="item">
             <ShareOutlinedIcon />
             Share
           </div>
         </div>
-        {commentOpen && <Comments postId={post.id} />}
+        {commentOpen && <Comments updateComment={updateComment} postId={post.id} />}
       </div>
     </div>
   );
