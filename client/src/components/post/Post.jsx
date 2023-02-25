@@ -6,18 +6,22 @@ import ShareOutlinedIcon from "@mui/icons-material/ShareOutlined";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import { Link } from "react-router-dom";
 import Comments from "../comments/Comments";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import moment from 'moment'
 import { makeRequest } from "../../axios";
+import { AuthContext } from "../../context/authContext";
+import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query'
+
 
 const Post = ({ post }) => {
   const [commentOpen, setCommentOpen] = useState(false);
   const [commentsNum, setCommentsNum] = useState(0)
+  const { currentUser } = useContext(AuthContext)
+
   //query the number of comments 
   useEffect(() => {
     async function getComments() {
       const result = await makeRequest.get(`/comments?postId=${post.id}`)
-      console.log(result)
       setCommentsNum(result.data.length)
     }
     getComments()
@@ -26,8 +30,32 @@ const Post = ({ post }) => {
   const updateComment = (commentsNumber) => {
     setCommentsNum(commentsNumber)
   }
-  //TEMPORARY
-  const liked = false;
+
+  const queryClient = useQueryClient()
+  const { isLoading, error, data } = useQuery(['likes', post.id], () =>
+    makeRequest.get(`/likes?postId=${post.id}`).then(res => {
+      return res.data
+    }))
+  // Mutations
+  const mutation = useMutation({
+    mutationFn: (like) => {
+      if (like)
+        return makeRequest.delete(`/likes?postId=${post.id}`)
+      return makeRequest.post(`/likes`, { postId: post.id })
+    },
+    onSuccess: () => {
+      // Invalidate and refetch
+      queryClient.invalidateQueries({ queryKey: ['likes'] })
+    },
+  })
+  // const deleteMutation = useMutation({
+  //   mutationFn: (postId) => {
+  //     return makeRequest(`/`)
+  //   }
+  // })
+  const handleLike = () => {
+    mutation.mutate(data.includes(currentUser.id))
+  }
 
   return (
     <div className="post">
@@ -54,8 +82,10 @@ const Post = ({ post }) => {
         </div>
         <div className="info">
           <div className="item">
-            {liked ? <FavoriteOutlinedIcon /> : <FavoriteBorderOutlinedIcon />}
-            12 Likes
+            {isLoading ? 'Loading' : data?.includes(currentUser.id) ? <FavoriteOutlinedIcon style={{
+              color: 'red'
+            }} onClick={handleLike} /> : <FavoriteBorderOutlinedIcon onClick={handleLike} />}
+            {data?.length} Likes
           </div>
           <div className="item" onClick={() => setCommentOpen(!commentOpen)}>
             <TextsmsOutlinedIcon />
