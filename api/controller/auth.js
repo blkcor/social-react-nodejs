@@ -54,6 +54,7 @@ export const login = (req, res) => {
 export const logout = (req, res) => {
   //TODO:logout
   res.clearCookie('acceptToken', {
+    //mark the cookie used with https only
     secure: true,
     sameSite: 'none'
   }).status(200).json({ message: 'Logout successfully' })
