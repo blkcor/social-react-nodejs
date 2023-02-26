@@ -4,6 +4,7 @@ import commentRouter from './routers/comments.js'
 import likeRouter from './routers/likes.js'
 import postRouter from './routers/posts.js'
 import authRouter from './routers/auth.js'
+import relationshipRouter from './routers/relationship.js';
 import cors from 'cors'
 import cookieParser from 'cookie-parser'
 import multer from 'multer'
@@ -38,6 +39,7 @@ app.use('/api/comments', commentRouter)
 app.use('/api/likes', likeRouter)
 app.use('/api/posts', postRouter)
 app.use('/api/auth', authRouter)
+app.use('/api/relationships', relationshipRouter)
 app.use('/api/upload', upload.single('file'), (req, res) => {
   const file = req.file
   res.status(200).json(file.filename)

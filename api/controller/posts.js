@@ -37,3 +37,17 @@ export const addPost = (req, res) => {
     })
   })
 }
+
+export const deletePost = (req, res) => {
+  const token = req.cookies.acceptToken
+  if (!token) return res.status(401).json('Not logged in!')
+  jwt.verify(token, "CHY", (err, userInfo) => {
+    if (err) return res.status(403).json("Invalid token")
+    const q = "DELETE from posts WHERE id = ? AND userId = ?"
+    db.query(q, [req.params.id, userInfo.id], (err, result) => {
+      if (err) return res.status(500).json(err)
+      if (result.affectRows > 0) return res.status(200).json('delete post succefully!')
+      else return res.status(403).json('You can just delete your post!')
+    })
+  })
+}
