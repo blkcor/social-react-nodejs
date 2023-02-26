@@ -7,7 +7,7 @@ export const getPosts = (req, res) => {
   jwt.verify(token, "CHY", (err, userInfo) => {
     if (err) return res.status(403).json('Invalid token')
     //token is valid
-    const q = `SELECT p.*, u.id AS userId, name, profilePic FROM posts AS p JOIN users AS u ON (u.id = p.userId)
+    const q = `SELECT p.*, u.id AS userId, name, profilePic FROM posts AS p LEFT JOIN users AS u ON (u.id = p.userId)
     LEFT JOIN relationships AS r ON (p.userId = r.followedUserId) WHERE r.followerUserId= ? OR p.userId =?
     ORDER BY createAt DESC`
     db.query(q, [userInfo.id, userInfo.id], (err, result) => {

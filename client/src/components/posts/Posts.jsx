@@ -10,7 +10,6 @@ const Posts = (userId) => {
     makeRequest.get(`/posts`).then(res => {
       return res.data
     }))
-
   return <div className="posts">
     {
       error ? "something wrong"

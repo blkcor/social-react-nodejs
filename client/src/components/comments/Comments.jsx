@@ -39,7 +39,7 @@ const Comments = ({ postId, updateComment }) => {
   }
 
   const { currentUser } = useContext(AuthContext);
-
+  console.log(currentUser)
   return (
     <div className="comments">
       <div className="write">
@@ -51,7 +51,7 @@ const Comments = ({ postId, updateComment }) => {
         'Loading' :
         data.map((comment) => (
           <div className="comment" key={comment.id}>
-            <img src={comment.profilePic} alt="" />
+            <img src={"/upload/" + comment.profilePic} alt="" />
             <div className="info">
               <span>{comment.name}</span>
               <p>{comment.desc}</p>

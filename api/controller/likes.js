@@ -8,7 +8,6 @@ export const getLikes = (req, res) => {
   })
 }
 export const addLike = (req, res) => {
-  console.log("req.body.postId", req.body.postId)
   const token = req.cookies.acceptToken
   if (!token) return res.status(401).json('Not logged in!')
   jwt.verify(token, "CHY", (err, userInfo) => {
